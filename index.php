@@ -13,7 +13,8 @@ DEFINE('_ID_MOTORE_RICERCA','00d2aa5247d474cda');
 /*
  * Setta il nome del file csv contentente la lista dei siti da spaccare
  */
-DEFINE('_FILE_SPACCA','test_file.csv');
+DEFINE('_FILE_SPACCA','file/test_file.csv');
+DEFINE('_FILE_RISULTATI','file/elaborato.csv');
 DEFINE('_COLONNA_SITO',1);
 DEFINE('_COLONNA_RAG_SOC',0);
 DEFINE('_COLONNA_EMAIL',2);
@@ -198,7 +199,7 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
 }
 
 
-$h = fopen(_DIR_PROJECT.'/elaborato.csv', 'a') ;
+$h = fopen(_DIR_PROJECT.'/'._FILE_RISULTATI, 'a') ;
 
 if (($handle = fopen(_DIR_PROJECT.'/'._FILE_SPACCA, 'r')) !== false && $h !== false ) {
     // Leggi riga per riga fino alla fine del file

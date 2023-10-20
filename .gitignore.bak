@@ -1,0 +1,10 @@
+/config.php
+public/**
+promo/**
+allegati_resi/**
+nbproject/**
+uploadfile/**
+.htaccess
+log/**
+css/notice.css
+ajx/crea_destinazioni.php

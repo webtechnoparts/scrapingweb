@@ -10,9 +10,12 @@ DEFINE('_ID_MOTORE_RICERCA','00d2aa5247d474cda');
 //GET https://www.googleapis.com/customsearch/v1?key=INSERT_YOUR_API_KEY&cx=017576662512468239146:omuauf_lfve&q=lectures
 
 //**********************************************************************/
+//**********************************************************************/
 /*
- * Setta il nome del file csv contentente la lista dei siti da spaccare
+ * Setta il nome del file csv contentente la lista dei siti da spaccare 
  */
+//**********************************************************************/
+//**********************************************************************/
 DEFINE('_FILE_SPACCA','file/test_file.csv');
 DEFINE('_FILE_RISULTATI','file/elaborato.csv');
 DEFINE('_COLONNA_SITO',1);
@@ -39,16 +42,13 @@ function lanciaCurl($indirizzo)
         //pulisco indirizzo
         if($http_code == 301) //sito spostato su altro indirizzo caso diredirect 
         {
-            
              $html = str_get_html($page);
-             
              if(!is_bool($html))  
              {    
                 foreach($html->find('a') as $link)
                 {
                     $link_find = isset($link->href) ? $link->href : $link->plaintext;
                     $page = lanciaCurl($link_find);
-                    
                 }    
              }   
              else
@@ -58,12 +58,9 @@ function lanciaCurl($indirizzo)
                  if(count($arrAdd) > 0)
                  {
                     $new_indirizzo = 'https'.$arrAdd[1];
-                    
                     $page = lanciaCurl($new_indirizzo);
-                    
                  }
              }
-             
         }    
         if(strpos($indirizzo, 'https') === false )
         {
@@ -96,19 +93,23 @@ function vaisuGoogle(&$listaEmail,$rag_soc)
        {
             if(strpos($arrSnippet[$i],'@')!== false )
                         {
-
-                            array_push($listaEmail, $arrSnippet[$i]);
+                            $link_find = pulisciEmail($arrSnippet[$i]);
+                            if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
+                            {
+                                array_push($listaEmail, $link_find);
+                            }        
+                            //array_push($listaEmail, $arrSnippet[$i]);
                         }
        }
        //echo '<p>'.$aa['snippet'].'</p>';
    }
-   
-    
-    
-    
-    
-   
-    
+}
+
+function pulisciEmail($testo)
+{
+    $testo = str_replace(";", "", $testo);
+    $testo = str_replace("|", "", $testo);
+    return $testo;
 }
 
 function visitaSito(&$listaEmail,$indirizzo,$stato=0)
@@ -128,9 +129,11 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                 $testo_link = $link->plaintext;
                 if(strpos($link_find,'@')!== false )
                 {
-
-                    array_push($listaEmail, $link_find);
-
+                    $link_find = pulisciEmail($link_find);
+                    if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
+                    {
+                        array_push($listaEmail, $link_find);
+                    }        
                 }        
                 if(strpos(strtoupper($testo_link), 'CONTA') !== false) //si tratta della pagina contatti seguila
                 {
@@ -146,7 +149,12 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                         if(strpos($arrayTesto[$i],'@')!== false )
                         {
 
-                            array_push($listaEmail, $arrayTesto[$i]);
+                            $arrayTesto[$i] = pulisciEmail($arrayTesto[$i]);
+                            if(filter_var($arrayTesto[$i], FILTER_VALIDATE_EMAIL))
+                            {
+                               array_push($listaEmail, $arrayTesto[$i]);
+                            } 
+                            
                         }
                     }
                             
@@ -171,7 +179,12 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                     if(strpos($link_find,'@')!== false )
                     {
                         
-                        array_push($listaEmail, $link_find);
+                        $link_find = pulisciEmail($link_find);
+                        if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
+                        {
+                            array_push($listaEmail, $link_find);
+                        }  
+                        
 
                     }        
                 }
@@ -183,8 +196,11 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                     {
                         if(strpos($arrayTesto[$i],'@')!== false )
                         {
-
-                            array_push($listaEmail, $arrayTesto[$i]);
+                            $arrayTesto[$i] = pulisciEmail($arrayTesto[$i]);
+                            if(filter_var($arrayTesto[$i], FILTER_VALIDATE_EMAIL))
+                            {
+                               array_push($listaEmail, $arrayTesto[$i]);
+                            } 
                         }
                     }
                             
@@ -201,52 +217,43 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
 
 $h = fopen(_DIR_PROJECT.'/'._FILE_RISULTATI, 'a') ;
 
-if (($handle = fopen(_DIR_PROJECT.'/'._FILE_SPACCA, 'r')) !== false && $h !== false ) {
+if (($handle = fopen(_DIR_PROJECT.'/'._FILE_SPACCA, 'r')) !== false && $h !== false ) 
+{
     // Leggi riga per riga fino alla fine del file
     $a = 0;
-    
     while (($data = fgetcsv($handle, 1000, ';')) !== false) 
     {
-            $listaEmail = array();
-            if($a> 0) //escluso prima riga
+        $listaEmail = array();
+        $tipo_ricerca = '';
+        if($a> 0) //escluso prima riga
+        {
+            $indirizzo = '';
+            $indirizzo = trim($data[_COLONNA_SITO]);
+            $email = '';
+            $email = $data[_COLONNA_EMAIL]; 
+            //SCRAPING DIRETTO DAL SITO
+            if($indirizzo != '') //cerco dall indirizzo   //se esiste indirizzo faccio scraping
             {
-                $indirizzo = '';
-                $indirizzo = trim($data[_COLONNA_SITO]);
-                $email = '';
-                $email = $data[_COLONNA_EMAIL]; 
-                //SCRAPING DIRETTO DAL SITO
-                /*if($indirizzo != '') //cerco dall indirizzo  
-                {
-
-                    visitaSito($listaEmail,$indirizzo);
-                    $stampa =  $data[_COLONNA_RAG_SOC].';'.$data[_COLONNA_SITO].';'.implode(",", array_unique($listaEmail)). "\n";
-                    fwrite($h, $stampa);
-                } */  
-                //SCRAPING TRAMITE RICERCA SU GOOGLE
-                if($email=='') //vai su google e cerca nome azienda
-                {
-                    //$indirizzo = 'https://www.google.com/search?q='.urlencode($data[_COLONNA_RAG_SOC].' indirizzo email contatti');
-                    //visitaSito($listaEmail,$indirizzo,1);
-                    vaisuGoogle($listaEmail, $data[_COLONNA_RAG_SOC]);
-                    $stampa =  $data[_COLONNA_RAG_SOC].';'.$data[_COLONNA_SITO].';'.implode(",", array_unique($listaEmail)).';2'. "\n";
-                    fwrite($h, $stampa);
-                    
-                }
-                else
-                {
-                    $stampa =  $data[_COLONNA_RAG_SOC].';'.$data[_COLONNA_SITO].';'.$data[_COLONNA_EMAIL]. "\n";
-                    fwrite($h, $stampa);
-                }
-                    
-                
+                visitaSito($listaEmail,$indirizzo);
+                $tipo_ricerca = 'scraping';
+            }    
+            if(count($listaEmail) == 0) //se non si trova nulla o non c' indirizzo sito internet -> interrogo google
+            {
+               vaisuGoogle($listaEmail, $data[_COLONNA_RAG_SOC]);
+               $tipo_ricerca = 'google';
+            }    
+            if(count($listaEmail) > 0) // se trovo email le aggiungo 
+            {    
+                $stampa =  $data[_COLONNA_RAG_SOC].';'.$data[_COLONNA_SITO].';'.implode("|", array_unique($listaEmail)).';'.$tipo_ricerca. "\n";
+                fwrite($h, $stampa);
             }
-
-         $a++;   
-        /* if($a == 10) 
-         {
-                 fclose($handle);
-                fclose($h);
-         }*/
+            else // se non le trovo riscrivo i dati 
+            {
+                $stampa =  $data[_COLONNA_RAG_SOC].';'.$data[_COLONNA_SITO].';'.$data[_COLONNA_EMAIL]. "\n";
+                fwrite($h, $stampa);
+            }
+        }
+       $a++;   
     }
 }
 die($stampa);

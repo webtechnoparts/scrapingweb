@@ -84,6 +84,7 @@ function vaisuGoogle(&$listaEmail,$rag_soc)
    $lancio = \Httpful\Request::get('https://www.googleapis.com/customsearch/v1?key='._API_KEY_GOOGLE.'&cx='._ID_MOTORE_RICERCA.'&q='.$query)->send();
    $result = array();
    $result = (array)$lancio->body;
+   //die(var_dump($result['items']));
    foreach($result['items'] as $kk => $vv)
    {
        $aa = (array)$vv;
@@ -94,10 +95,10 @@ function vaisuGoogle(&$listaEmail,$rag_soc)
             if(strpos($arrSnippet[$i],'@')!== false )
                         {
                             $link_find = pulisciEmail($arrSnippet[$i]);
-                            if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
-                            {
+                            //if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
+                           // {
                                 array_push($listaEmail, $link_find);
-                            }        
+                            //}        
                             //array_push($listaEmail, $arrSnippet[$i]);
                         }
        }
@@ -109,6 +110,8 @@ function pulisciEmail($testo)
 {
     $testo = str_replace(";", "", $testo);
     $testo = str_replace("|", "", $testo);
+    $testo = str_replace(",", "", $testo);
+    $testo = str_replace(";", "", $testo);
     return $testo;
 }
 
@@ -130,10 +133,10 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                 if(strpos($link_find,'@')!== false )
                 {
                     $link_find = pulisciEmail($link_find);
-                    if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
-                    {
+                   // if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
+                   // {
                         array_push($listaEmail, $link_find);
-                    }        
+                   // }        
                 }        
                 if(strpos(strtoupper($testo_link), 'CONTA') !== false) //si tratta della pagina contatti seguila
                 {
@@ -150,10 +153,10 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                         {
 
                             $arrayTesto[$i] = pulisciEmail($arrayTesto[$i]);
-                            if(filter_var($arrayTesto[$i], FILTER_VALIDATE_EMAIL))
-                            {
+                           // if(filter_var($arrayTesto[$i], FILTER_VALIDATE_EMAIL))
+                           // {
                                array_push($listaEmail, $arrayTesto[$i]);
-                            } 
+                           // } 
                             
                         }
                     }
@@ -180,10 +183,10 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                     {
                         
                         $link_find = pulisciEmail($link_find);
-                        if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
-                        {
+                      //  if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
+                       // {
                             array_push($listaEmail, $link_find);
-                        }  
+                       // }  
                         
 
                     }        
@@ -197,10 +200,10 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                         if(strpos($arrayTesto[$i],'@')!== false )
                         {
                             $arrayTesto[$i] = pulisciEmail($arrayTesto[$i]);
-                            if(filter_var($arrayTesto[$i], FILTER_VALIDATE_EMAIL))
-                            {
+                           // if(filter_var($arrayTesto[$i], FILTER_VALIDATE_EMAIL))
+                           // {
                                array_push($listaEmail, $arrayTesto[$i]);
-                            } 
+                           // } 
                         }
                     }
                             

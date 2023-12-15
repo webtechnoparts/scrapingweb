@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(1);
 
 require_once 'vendor/autoload.php';
@@ -108,6 +109,9 @@ function vaisuGoogle(&$listaEmail,$rag_soc)
 
 function pulisciEmail($testo)
 {
+    $string = htmlentities($testo, null, 'utf-8');
+    $testo = str_replace("&nbsp;", "", $string);
+    $testo = html_entity_decode($testo);
     $testo = str_replace(";", "", $testo);
     $testo = str_replace("|", "", $testo);
     $testo = str_replace(",", "", $testo);
@@ -116,6 +120,9 @@ function pulisciEmail($testo)
     $testo = str_replace("\/", "", $testo);
     $testo = str_replace("<br/>", "", $testo);
     $testo = str_replace("<br>", "", $testo);
+    
+    
+    
     $testo = strip_tags($testo);
     return $testo;
 }
@@ -133,11 +140,13 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
             //Cerca gli indirizzi email in home page
             foreach($html->find('a') as $link)
             {
+                
                 $link_find = isset($link->href) ? $link->href : $link->plaintext;
                 $testo_link = $link->plaintext;
                 $link_find = strip_tags($link_find);
                 if(strpos($link_find,'@')!== false ) 
                 {
+                    
                     $link_find = pulisciEmail($link_find);
                    // if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
                    // {
@@ -159,8 +168,9 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                     {
                         if(strpos($arrayTesto[$i],'@')!== false )
                         {
-
+                           
                             $arrayTesto[$i] = pulisciEmail($arrayTesto[$i]);
+                             
                            // if(filter_var($arrayTesto[$i], FILTER_VALIDATE_EMAIL))
                            // {
                                array_push($listaEmail, $arrayTesto[$i]);
@@ -257,7 +267,9 @@ if (($handle = fopen(_DIR_PROJECT.'/'._FILE_SPACCA, 'r')) !== false && $h !== fa
             }    
             if(count($listaEmail) > 0) // se trovo email le aggiungo 
             {    
-                $stampa =  $data[_COLONNA_RAG_SOC].';'.$data[_COLONNA_SITO].';'.implode("|", array_unique($listaEmail)).';'.$tipo_ricerca. "\n";
+                $ff = implode("|", array_unique($listaEmail));
+                $ffb = preg_replace( "/\r|\n/", "", $ff );
+                $stampa =  $data[_COLONNA_RAG_SOC].';'.$data[_COLONNA_SITO].';'.$ffb.';'.$tipo_ricerca. "\n";
                 fwrite($h, $stampa);
             }
             else // se non le trovo riscrivo i dati 

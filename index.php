@@ -135,7 +135,8 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
             {
                 $link_find = isset($link->href) ? $link->href : $link->plaintext;
                 $testo_link = $link->plaintext;
-                if(strpos($link_find,'@')!== false )
+                $link_find = strip_tags($link_find);
+                if(strpos($link_find,'@')!== false ) 
                 {
                     $link_find = pulisciEmail($link_find);
                    // if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
@@ -152,6 +153,7 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
             foreach($html->find('p') as $link)
                 {
                     $link_find = $link->plaintext;
+                    $link_find = strip_tags($link_find);
                     $arrayTesto = explode(" ", $link_find);
                     for($i=0;$i<=count($arrayTesto)-1;$i++)
                     {
@@ -185,6 +187,7 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                     //$link_find = $link->href;
                     $link_find = isset($link->href) ? $link->href : $link->plaintext;
                     $testo_link = $link->plaintext;
+                    $link_find = strip_tags($link_find);
                     if(strpos($link_find,'@')!== false )
                     {
                         
@@ -200,6 +203,7 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                 foreach($html->find('p') as $link)
                 {
                     $link_find = $link->plaintext;
+                    $link_find = strip_tags($link_find);
                     $arrayTesto = explode(" ", $link_find);
                     for($i=0;$i<=count($arrayTesto)-1;$i++)
                     {

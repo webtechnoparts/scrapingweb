@@ -112,6 +112,8 @@ function pulisciEmail($testo)
     $testo = str_replace("|", "", $testo);
     $testo = str_replace(",", "", $testo);
     $testo = str_replace(";", "", $testo);
+    $testo = str_replace("\n", "", $testo);
+    $testo = str_replace("\/", "", $testo);
     return $testo;
 }
 
@@ -135,6 +137,7 @@ function visitaSito(&$listaEmail,$indirizzo,$stato=0)
                     $link_find = pulisciEmail($link_find);
                    // if(filter_var($link_find, FILTER_VALIDATE_EMAIL))
                    // {
+                    
                         array_push($listaEmail, $link_find);
                    // }        
                 }        
@@ -259,6 +262,7 @@ if (($handle = fopen(_DIR_PROJECT.'/'._FILE_SPACCA, 'r')) !== false && $h !== fa
        $a++;   
     }
 }
+fclose($h);
 die($stampa);
 die('ferma');
 

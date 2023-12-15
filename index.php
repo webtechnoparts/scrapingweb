@@ -114,6 +114,9 @@ function pulisciEmail($testo)
     $testo = str_replace(";", "", $testo);
     $testo = str_replace("\n", "", $testo);
     $testo = str_replace("\/", "", $testo);
+    $testo = str_replace("<br/>", "", $testo);
+    $testo = str_replace("<br>", "", $testo);
+    $testo = strip_tags($testo);
     return $testo;
 }
 
